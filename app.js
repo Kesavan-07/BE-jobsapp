@@ -11,11 +11,11 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: "*",
+    origin: '*',
     credentials: true,
   })
 );
 
-app.use("/api/v1/auth", authRouter);
+app.use('/api/v1/auth' , authRouter);
 
 module.exports = app;

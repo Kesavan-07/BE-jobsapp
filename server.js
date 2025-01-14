@@ -11,7 +11,7 @@ mongoose
 
     //start the server
     app.listen(PORT, () => {
-        console.log(`Server running @ http://localhost:${PORT}`);
+        console.log(`Server running @http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
