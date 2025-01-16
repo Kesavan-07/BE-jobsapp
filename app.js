@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const authRouter = require("./routes/authRoutes");
+const userRouter = require("./routes/UserRoutes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -16,6 +17,9 @@ app.use(
   })
 );
 
-app.use('/api/v1/auth' , authRouter);
+app.use('/api/v1/auth', authRouter);
+
+app.use('/api/v1/user', userRouter);
+
 
 module.exports = app;
