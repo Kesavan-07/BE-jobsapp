@@ -17,16 +17,16 @@ adminRouter.delete("/companies/:id", auth.checkauth, auth.allowRoles(["admin"]),
 adminRouter.put("/companies/:companyId/assign-recruiters/:recruiterId", auth.checkauth, auth.allowRoles(["admin"]), adminController.assignRecruiter);
 adminRouter.put("/companies/:companyId/remove-recruiters/:recruiterId", auth.checkauth, auth.allowRoles(["admin"]), adminController.removeRecruiter);
 
-//manage jobs
-adminRouter.post("/jobs", auth.checkauth, auth.allowRoles(["admin"]), adminController.createJob);
-adminRouter.put("/jobs/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.updateJob);
-adminRouter.delete("/jobs/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.deleteJob);
-adminRouter.get("/jobs", auth.checkauth, auth.allowRoles(["admin"]), adminController.viewAllJobs);
+// manage jobs
+// adminRouter.post("/jobs", auth.checkauth, auth.allowRoles(["recruiter","admin"]), adminController.createJob);
+// adminRouter.put("/jobs/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.updateJob);
+// adminRouter.delete("/jobs/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.deleteJob);
+// adminRouter.get("/jobs", auth.checkauth, auth.allowRoles(["admin"]), adminController.viewAllJobs);
 
-//manage users
-adminRouter.get("/users", auth.checkauth, auth.allowRoles(["admin"]), adminController.viewAllUsers);
-adminRouter.delete("/users/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.deleteUser);
-adminRouter.put("/users/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.updateUser);
+// manage users
+// adminRouter.get("/users", auth.checkauth, auth.allowRoles(["admin"]), adminController.viewAllUsers);
+// adminRouter.delete("/users/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.deleteUser);
+// adminRouter.put("/users/:id", auth.checkauth, auth.allowRoles(["admin"]), adminController.updateUser);
 
 
 module.exports = adminRouter;
