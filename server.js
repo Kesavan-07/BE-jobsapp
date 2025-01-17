@@ -2,18 +2,17 @@ const mongoose = require("mongoose");
 const { MONGODB_URI, PORT } = require("./utils/config");
 const app = require("./app");
 
-console.log("Connecting to the Database");
+console.log(`Connecting to the database...`);
 mongoose
   .connect(MONGODB_URI)
-
   .then(() => {
-    console.log("Connected to the Database");
+    console.log(`Connected to the database!`);
 
-    //start the server
+    // Start the server
     app.listen(PORT, () => {
-        console.log(`Server running @http://localhost:${PORT}`);
+      console.log(`Server running @ http://localhost:${PORT}`);
     });
   })
-  .catch((err) => {
-    console.error("Error connecting to the Database:", err.message); // Log error message
+  .catch((error) => {
+    console.log(`Error connecting to the database: ${error}`);
   });

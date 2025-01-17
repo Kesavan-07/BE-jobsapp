@@ -1,59 +1,73 @@
+const Job = require("../models/Job");
+const Company = require("../models/Company");
+
 const recruiterController = {
-    createJob: async (req, res) => {
-        try {
-            // get the job details from the request body
-            const { title, description } = req.body;
-            //create a new job
-            const newJob = await Job.create({
-                title,
-                description,
-                postedby: req.userId,
-                company : req.companyId
-            });
-            //return success response
-            return res.status(201).json({ message: "Job created successfully", newJob });
+  createJob: async (req, res) => {
+    try {
+      // get the job details from the request body
+      const { title, description } = req.body;
 
+      // get the company details
+      const company = await Company.findOne({ recruiter: req.userId });
 
-            
-            } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
-    ViewJobs: async (req, res) => {
-        try {
-            
-            } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
-    UpdateJob: async (req, res) => {
-        try {
-            
-            } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
-    DeleteJob: async (req, res) => {
-        try {
-            
-            } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
-    ViewApplicants: async (req, res) => {
-        try {
-            
-            } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
-    ViewCandidateProfile: async (req, res) => {
-        try {
-            
-            } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    },
+      // create a new job
+      const job = new Job({
+        title,
+        description,
+        postedBy: req.userId,
+        company: company._id,
+      });
+
+      // save the job
+      await job.save();
+
+      // push the job to the company's jobs array
+      company.jobs.push(job._id);
+
+      // save the company
+      await company.save();
+
+      res.status(201).json({ message: "Job created successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  viewJobs: async (req, res) => {
+    try {
+      // get the company details
+      const company = await Company.findOne({ recruiter: req.userId }).populate(
+        "jobs"
+      );
+
+      res.status(200).json({ jobs: company.jobs });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  updateJob: async (req, res) => {
+    try {
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  deleteJob: async (req, res) => {
+    try {
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  viewApplications: async (req, res) => {
+    try {
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  viewCandidateProfile: async (req, res) => {
+    try {
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
 };
 
 module.exports = recruiterController;

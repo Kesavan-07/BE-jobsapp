@@ -1,23 +1,25 @@
-const User = require("../models/user");
-const Recruiter = require("../models/recruiter.js");
-const Company = require("../models/company");
-// const Job = require("../models/job");
+const Company = require("../models/Company");
+const User = require("../models/User");
 const bcrypt = require("bcrypt");
 
 const adminController = {
   createRecruiter: async (req, res) => {
     try {
-      //get the details from recruiter from the request body
+      // get the details of the recruiter from the request body
       const { email, password, role, name } = req.body;
-      // get the id from the request params
-      //check if the user already exists
+
+      // check if the email is already in use
       const recruiter = await User.findOne({ email });
-      //if the user exists, return an error message
-      if (recruiter)
-        return res.status(400).json({ message: "User already exists" });
-      //hash the password
+
+      // if the email exists, return an error message
+      if (recruiter) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+
+      // hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
-      //create a new recruiter
+
+      // create a new recruiter
       const newRecruiter = new User({
         email,
         password: hashedPassword,
@@ -25,9 +27,10 @@ const adminController = {
         name,
       });
 
-      //save the recruiter
+      // save the new recruiter to the database
       await newRecruiter.save();
-      //return a success message
+
+      // return a success message
       res.status(201).json({ message: "Recruiter created successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -37,20 +40,25 @@ const adminController = {
     try {
       // get the details of the recruiter from the request body
       const { email, password, name } = req.body;
+
+      // get the id of the recruiter from the request parameters
       const { id } = req.params;
-      //check if the recruiter exists
+
+      // check if the recruiter exists
       const recruiter = await User.findById(id);
+
       // if the recruiter does not exist, return an error message
-      if (!recruiter)
-        return res.status(400).json({ message: "Recruiter does not exist" });
-      // hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
-      // update the recruiter
+      if (!recruiter) {
+        return res.status(404).json({ message: "Recruiter not found" });
+      }
+
+      // update the recruiter details
       await User.findByIdAndUpdate(id, {
         email,
-        password: hashedPassword,
+        password,
         name,
       });
+
       // return a success message
       res.status(200).json({ message: "Recruiter updated successfully" });
     } catch (error) {
@@ -59,15 +67,20 @@ const adminController = {
   },
   deleteRecruiter: async (req, res) => {
     try {
-      // get the id from the request params
+      // get the id of the recruiter from the request parameters
       const { id } = req.params;
+
       // check if the recruiter exists
       const recruiter = await User.findById(id);
+
       // if the recruiter does not exist, return an error message
-      if (!recruiter)
-        return res.status(400).json({ message: "Recruiter does not exist" });
+      if (!recruiter) {
+        return res.status(404).json({ message: "Recruiter not found" });
+      }
+
       // delete the recruiter
       await User.findByIdAndDelete(id);
+
       // return a success message
       res.status(200).json({ message: "Recruiter deleted successfully" });
     } catch (error) {
@@ -77,16 +90,25 @@ const adminController = {
   createCompany: async (req, res) => {
     try {
       // get the details of the company from the request body
-      const { name, location, description } = req.body;
+      const { name, location } = req.body;
+
       // check if the company already exists
       const company = await Company.findOne({ name });
+
       // if the company exists, return an error message
-      if (company)
+      if (company) {
         return res.status(400).json({ message: "Company already exists" });
+      }
+
       // create a new company
-      const newCompany = new Company({ name, location, description });
-      // save the company
+      const newCompany = new Company({
+        name,
+        location,
+      });
+
+      // save the new company to the database
       await newCompany.save();
+
       // return a success message
       res.status(201).json({ message: "Company created successfully" });
     } catch (error) {
@@ -97,14 +119,24 @@ const adminController = {
     try {
       // get the details of the company from the request body
       const { name, location } = req.body;
+
+      // get the id of the company from the request parameters
       const { id } = req.params;
+
       // check if the company exists
       const company = await Company.findById(id);
+
       // if the company does not exist, return an error message
-      if (!company)
-        return res.status(400).json({ message: "Company does not exist" });
-      // update the company
-      await Company.findByIdAndUpdate(id, { name, location });
+      if (!company) {
+        return res.status(404).json({ message: "Company not found" });
+      }
+
+      // update the company details
+      await Company.findByIdAndUpdate(id, {
+        name,
+        location,
+      });
+
       // return a success message
       res.status(200).json({ message: "Company updated successfully" });
     } catch (error) {
@@ -113,15 +145,20 @@ const adminController = {
   },
   deleteCompany: async (req, res) => {
     try {
-      // get the id from the request params
+      // get the id of the company from the request parameters
       const { id } = req.params;
+
       // check if the company exists
       const company = await Company.findById(id);
+
       // if the company does not exist, return an error message
-      if (!company)
-        return res.status(400).json({ message: "Company does not exist" });
+      if (!company) {
+        return res.status(404).json({ message: "Company not found" });
+      }
+
       // delete the company
       await Company.findByIdAndDelete(id);
+
       // return a success message
       res.status(200).json({ message: "Company deleted successfully" });
     } catch (error) {
@@ -130,62 +167,72 @@ const adminController = {
   },
   assignRecruiter: async (req, res) => {
     try {
-      // Get the IDs of the company and recruiter from the request params
+      // get the id of the company and recruiter from the request parameters
       const { companyId, recruiterId } = req.params;
 
-      // Check if the company exists
+      // check if the company exists
       const company = await Company.findById(companyId);
+
+      // if the company does not exist, return an error message
       if (!company) {
-        return res.status(400).json({ message: "Company does not exist" });
+        return res.status(404).json({ message: "Company not found" });
       }
 
-      // Check if the recruiter exists
+      // check if the recruiter exists
       const recruiter = await User.findById(recruiterId);
+
+      // if the recruiter does not exist, return an error message
       if (!recruiter) {
-        return res.status(400).json({ message: "Recruiter does not exist" });
+        return res.status(404).json({ message: "Recruiter not found" });
       }
 
-      // Assign the recruiter to the company
-      company.recruiters.push(recruiterId);
-      await company.save();
+      // assign the recruiter to the company
+      await Company.findByIdAndUpdate(companyId, {
+        recruiter: recruiterId,
+      });
 
-      // Return a success message
-      res.status(200).json({ message: "Recruiter assigned successfully" });
+      // return a success message
+      res
+        .status(200)
+        .json({ message: "Recruiter assigned to company successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   },
-
   removeRecruiter: async (req, res) => {
     try {
-      // Get the IDs of the company and recruiter from the request params
+      // get the id of the company and recruiter from the request parameters
       const { companyId, recruiterId } = req.params;
 
-      // Check if the company exists
+      // check if the company exists
       const company = await Company.findById(companyId);
+
+      // if the company does not exist, return an error message
       if (!company) {
-        return res.status(400).json({ message: "Company does not exist" });
+        return res.status(404).json({ message: "Company not found" });
       }
 
-      // Check if the recruiter exists in the company's recruiters array
-      const recruiterIndex = company.recruiters.indexOf(recruiterId);
-      if (recruiterIndex === -1) {
-        return res
-          .status(400)
-          .json({ message: "Recruiter is not assigned to this company" });
+      // check if the recruiter exists
+      const recruiter = await User.findById(recruiterId);
+
+      // if the recruiter does not exist, return an error message
+      if (!recruiter) {
+        return res.status(404).json({ message: "Recruiter not found" });
       }
 
-      // Remove the recruiter from the company's recruiters array
-      company.recruiters.splice(recruiterIndex, 1);
-      await company.save();
+      // remove the recruiter from the company
+      await Company.findByIdAndUpdate(companyId, {
+        recruiter: null,
+      });
 
-      // Return a success message
-      res.status(200).json({ message: "Recruiter removed successfully" });
+      // return a success message
+      res
+        .status(200)
+        .json({ message: "Recruiter removed from company successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   },
-
   createJob: async (req, res) => {
     try {
     } catch (error) {
@@ -198,13 +245,13 @@ const adminController = {
       res.status(500).json({ message: error.message });
     }
   },
-  deleteJob: async (req, res) => {
+  updateJob: async (req, res) => {
     try {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   },
-  updateJob: async (req, res) => {
+  deleteJob: async (req, res) => {
     try {
     } catch (error) {
       res.status(500).json({ message: error.message });
